@@ -9,7 +9,11 @@ int     main()
     double **uniform_grid = get_uniform_grid(a, b, n);
     print_grid(uniform_grid, n);
 
-    cout << spline_inter(uniform_grid, 2, n) << endl;
-    cout << FUNC(4) << endl;
+    double *x;
+    x = spline_inter(uniform_grid, -2, n);
+    for (int i = 0; i < n; i++)
+        cout << "\t" << setw(7) << x[i];
+    cout << endl;
+    cout << FUNC(-2) << endl;
     return (0);
 }
