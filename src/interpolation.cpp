@@ -1,6 +1,6 @@
 #include "interpolation.h"
 
-double   **get_uniform_grid(double a, double b, int n)
+double      **get_uniform_grid(double a, double b, int n)
 {
     double **grid = new double*[2];
     double x;
@@ -16,7 +16,7 @@ double   **get_uniform_grid(double a, double b, int n)
     return (grid);
 }
 
-void      print_uniform_grid(double **grid, int n)
+void         print_grid(double **grid, int n)
 {
     cout <<"uniform grid :\n" << " x =";
     for (int i = 0; i <= n; i++)

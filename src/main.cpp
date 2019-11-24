@@ -7,7 +7,7 @@ int     main()
     int     n = NUM;
 
     double **uniform_grid = get_uniform_grid(a, b, n);
-    print_uniform_grid(uniform_grid, n);
+    print_grid(uniform_grid, n);
     cout << FUNC(4) << endl;
     return (0);
 }
