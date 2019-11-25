@@ -110,21 +110,21 @@ double **get_chebysh_points(double ** grid, double a, double b, int n, int h)
     fstream out;
 
     cheb_points = new double*[2];
-    cheb_points[0] = new double[n * (h - 1)];
-    cheb_points[1] = new double[n * (h - 1)];
+    cheb_points[0] = new double[n * h - 2];
+    cheb_points[1] = new double[n * h - 2];
     out.open("points.txt", ofstream::app);
-    for (int i = 0; i < n * (h - 1); i++)
+    for (int i = 0; i < n * h - 2; i++)
     {
-        cheb_points[0][n * (h - 1) - i] = (a + b) / 2 + (b - a) / h /  2 * cos((2 * i + 1) * 3.14 / (2 * (n)));
-        out << cheb_points[0][n * (h - 1) - i] << " ";
+        cheb_points[0][n * h - i - 2] = (a + b) / 2 + (b - a) / 2 * cos((2 * i + 1) * 3.14 / (2 * (n)));
+        out << cheb_points[0][n * h - i - 2] << " ";
     }
     out << endl;
-    for (int j = 0; j < n * (h - 1); j++)
+    for (int j = 0; j < n * h - 2; j++)
     {
         cheb_points[1][j] = lagrang_inter(grid, cheb_points[0][j], n);
         put_zero(&(cheb_points[1][j]));
         out << cheb_points[1][j] << " ";
-    }
+    }   
     out << endl;
     out.close();
     return (cheb_points);
