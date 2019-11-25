@@ -15,11 +15,6 @@ int     main()
     cout << "Chebysh grid : " << endl;
     print_grid(chebysh_grid, n);
 
-//     double *x;
-//     x = spline_inter(uniform_grid, -2, n);
-//     for (int i = 0; i < n; i++)
-//          cout << "\t" << setw(7) << x[i];
-//     cout << endl;
-//     cout << FUNC(-2) << endl;
+    spline_inter(uniform_grid, n);
     return (0);
 }

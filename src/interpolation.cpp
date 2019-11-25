@@ -124,7 +124,12 @@ void     put_zero(double *x)
     if (abs(*x) < EPS)
         *x = 0;
 }
-double  *spline_inter(double **grid, double x, const int n) {
+
+void    spline_inter(double **grid, const int m)
+{
+    ofstream fout("spline.txt");
+
+    int n = m - 1;
     double *a = new double[n];
     double *b = new double[n];
     double *c = new double[n];
@@ -137,9 +142,7 @@ double  *spline_inter(double **grid, double x, const int n) {
 
     double *h = new double[n];
     double *g = new double[n];
-
-    double *res = new double[n];
-
+    
     for (int i = 1; i <= n; i++)
     {
         a[i] = grid[1][i - 1];
@@ -148,51 +151,50 @@ double  *spline_inter(double **grid, double x, const int n) {
     }
     for (int i = 2; i <= n; i++)
     {
-        aa[i - 2] = h[i - 1];
-        bb[i - 2] = 2 * (h[i - 1] + h[i]);
-        cc[i - 2] = h[i];
-        dd[i - 2] = 3 * (g[i] - g[i - 1]);
+        aa[i - 1] = h[i - 1];
+        bb[i - 1] = 2 * (h[i - 1] + h[i]);
+        cc[i - 1] = h[i];
+        dd[i - 1] = 3 * (g[i] - g[i - 1]);
     }
-    c = sweep_method(aa, bb, cc, dd, n - 2);
+    c = sweep_method(aa, bb, cc, dd, n);
     for (int i = 1; i <= n; i++)
     {
         b[i] = g[i] - (c[i + 1] + 2 * c[i]) * h[i] / 3;
         d[i] = (c[i + 1] - c[i]) / (3 * h[i]);
     }
+    cout << "\t" <<"a" << "\t|\t" << "b" << "\t|\t" << "c" << "\t|\t" << "d" //
+        << "\t|\t" << "(x[i-1], x[i])\n" //
+        << "----------------------------------------------------------------------------------------\n";
     for (int i = 1; i <= n; i++)
-        res[i - 1] =  a[i] + b[i] * (x - grid[0][i - 1]) + //
-        c[i] * (x - grid[0][i - 1]) * (x - grid[0][i - 1]) +//
-        d[i] * (x - grid[0][i - 1]) * (x - grid[0][i - 1]) * (x - grid[0][i - 1]);
-        
-    return (res);
+    {
+        cout << setw(10) << a[i] << "\t|" << setw(10) << b[i] << "\t|" << setw(10) //
+            << c[i] << "\t|" << setw(10) << d[i] << "\t|" << setw(10) << grid[0][i-1] //
+            << " < x < " << grid[0][i] << endl;
+        fout << a[i] << " " << b[i] << " " << c[i] << " " << d[i] << endl;
+    }
+    fout.close();
 }
 
 double  *sweep_method(double *a, double *b, double *c, double *d, const int n)
 {
     double *alpha = new double[n];
     double *beta = new double[n];
-    double *y = new double[n];
+    double y = 0.;
     double *x = new double[n];
 
-    y[0] = b[0];
-    alpha[0] = -c[0]/y[0];
-    beta[0] = d[0]/y[0];
-    for (int i = 1; i <= n - 1; i++)
+    alpha[2] = c[1] / b[1];
+    beta[2] = d[1] / b[1];
+    for (int i = 2; i <= n - 1; i++)
     {
-        y[i] = b[i] + a[i] * alpha[i - 1];
-        alpha[i] = -c[i]/y[i];
-        beta[i] = (d[i] - a[i] * beta[i - 1]) / y[i];
+        y = b[i] - a[i] * alpha[i];
+        alpha[i + 1] = c[i] / y;
+        beta[i + 1] = (d[i] + a[i] * beta[i]) / y;
     }
-    y[n] = b[n] + a[n] * alpha[n - 1];
-    beta[n] = (d[n] - a[n] * beta[n - 1]) / y[n];
-    x[n] = beta[n];
+    
+    x[n] = (d[n-1] + a[n-1] * beta[n-1]) / (b[n-1] - a[n-1] * alpha[n-1]);
     for (int i = n - 1; i >= 1; i--)
     {
         x[i] = alpha[i] * x[i + 1] + beta[i];
     }
-    delete[] alpha;
-    delete[] beta;
-    delete[] y;
-
     return (x);
 }

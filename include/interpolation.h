@@ -8,7 +8,7 @@
 using namespace std;
 
 #define FUNC(x) x*x
-#define NUM 11
+#define NUM 5
 #define LEFT -1
 #define RIGHT 1
 #define EPS 10e-7
@@ -21,5 +21,5 @@ double		**get_chebysh_grid(double a, double b, int n);
 double		**get_lagr_points(double ** grid, double a, double b, int n, int h);
 double		**get_chebysh_points(double ** grid, double a, double b, int n, int h);
 void		put_zero(double *x);
-double  	*spline_inter(double **grid, double x, const int n);
+void	  	spline_inter(double **grid, const int n);
 double  	*sweep_method(double *a, double *b, double *c, double *d, const int n);
