@@ -8,11 +8,11 @@
 using namespace std;
 
 #define FUNC(x) x*x
-#define NUM 11
+#define NUM 5
 #define LEFT -1
 #define RIGHT 1
 #define EPS 10e-7
-#define H 1
+#define H 2
 
 double      **get_uniform_grid(double a, double b, int n);
 void        print_grid(double **grid, int );
