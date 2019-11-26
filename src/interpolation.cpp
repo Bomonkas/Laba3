@@ -29,10 +29,9 @@ double **get_chebysh_grid(double a, double b, int n)
     grid[0] = new double [n];
     grid[1] = new double [n];
     for (int i = 0; i < n; i++)
-    {
         grid[0][n - i - 1] = (a + b) / 2 + (b - a) / 2 * cos((2 * i + 1) * 3.14 / (2 * (n)));
-        out << grid[0][n - i - 1] << " ";
-    }
+    for (int i = 0; i < n; i++)
+        out << grid[0][i] << " ";
     out << endl;
     for (int i = 0; i < n; i++)
     {
@@ -113,11 +112,11 @@ double **get_lagr_chebysh_points(double ** grid, double a, double b, int n, int 
     cheb_points[1] = new double[n * h - 1];
     for (int i = 0; i < n * h - 1; i++)
     {
-        cheb_points[0][n * h - i - 2] = (a + b) / 2 + (b - a) / 2 * cos((2 * i + 1) * 3.14 / (2 * (n)));
-        out << cheb_points[0][n * h - i - 2] << " ";
+        cheb_points[0][n * h - i - 1] = (a + b) / 2 + (b - a) / 2 * cos((2 * i + 1) * 3.14 / (2 * (n)));
+        out << cheb_points[0][n * h - i - 1] << " ";
     }
     out << endl;
-    for (int j = 0; j < n * h - 2; j++)
+    for (int j = 0; j < n * h - 1; j++)
     {
         cheb_points[1][j] = lagrang_inter(grid, cheb_points[0][j], n);
         put_zero(&(cheb_points[1][j]));
