@@ -77,7 +77,7 @@ void         print_grid(double **grid, int n)
     cout << endl;
 }
 
-double **get_lagr_points(double ** grid, double a, double b, int n, int h)
+double **get_lagr_uniform_points(double ** grid, double a, double b, int n, int h)
 {
     double **lagr_points;
     fstream out("points.txt");
@@ -103,7 +103,7 @@ double **get_lagr_points(double ** grid, double a, double b, int n, int h)
     return (lagr_points);
 }
 
-double **get_chebysh_points(double ** grid, double a, double b, int n, int h)
+double **get_lagr_chebysh_points(double ** grid, double a, double b, int n, int h)
 {
     double **cheb_points;
     fstream out("points.txt");
@@ -144,10 +144,10 @@ void    spline_inter(double **grid, const int m)
     double *c = new double[n + 1];
     double *d = new double[n + 1];
 
-    double *aa = new double[n + 1];
-    double *bb = new double[n + 1];
-    double *cc = new double[n + 1];
-    double *dd = new double[n + 1];
+    double *aa = new double[n];
+    double *bb = new double[n];
+    double *cc = new double[n];
+    double *dd = new double[n];
 
     double *h = new double[n + 1];
     double *g = new double[n + 1];
@@ -171,9 +171,9 @@ void    spline_inter(double **grid, const int m)
         b[i] = g[i] - (c[i + 1] + 2 * c[i]) * h[i] / 3;
         d[i] = (c[i + 1] - c[i]) / (3 * h[i]);
     }
-    cout << "\t" <<"a" << "\t|\t" << "b" << "\t|\t" << "c" << "\t|\t" << "d" //
-        << "\t|\t" << "(x[i-1], x[i])\n" //
-        << "----------------------------------------------------------------------------------------\n";
+    // cout << "\t" <<"a" << "\t|\t" << "b" << "\t|\t" << "c" << "\t|\t" << "d" //
+    //     << "\t|\t" << "(x[i-1], x[i])\n" //
+    //     << "----------------------------------------------------------------------------------------\n";
     for (int i = 1; i <= n; i++)
     {
         put_zero(&a[i]);
