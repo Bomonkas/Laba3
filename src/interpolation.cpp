@@ -132,9 +132,9 @@ void     put_zero(double *x)
         *x = 0;
 }
 
-void    spline_inter(double **grid, const int m)
+void    spline_inter(string name_file, double **grid, const int m)
 {
-    ofstream fout("spline.txt");
+    ofstream fout(name_file);
     fout << m << endl;
     int n = m - 1;
     double *a = new double[n + 1];

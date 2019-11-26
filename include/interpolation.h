@@ -4,10 +4,11 @@
 #include <iomanip>
 #include <cmath>
 #include <fstream>
+#include <cstring>
 
 using namespace std;
 
-#define FUNC(x) pow(4, x)
+#define FUNC(x) x*x
 #define NUM 10
 #define LEFT -1
 #define RIGHT 1
@@ -21,5 +22,5 @@ double		**get_chebysh_grid(double a, double b, int n);
 double		**get_lagr_uniform_points(double ** grid, double a, double b, int n, int h);
 double		**get_lagr_chebysh_points(double ** grid, double a, double b, int n, int h);
 void		put_zero(double *x);
-void	  	spline_inter(double **grid, const int n);
+void	  	spline_inter(string name_file, double **grid, const int n);
 double  	*sweep_method(double *a, double *b, double *c, double *d, const int n);

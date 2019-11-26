@@ -18,7 +18,8 @@ int     main()
     double x = 1.5;
     cout << "Ln(" << x << ") = " << lagrang_inter(uniform_grid, x, n) << ",   f(" << x <<") = " << FUNC(x) << endl;
 
-    spline_inter(uniform_grid, n);
+    spline_inter("unispline.txt", uniform_grid, n);
+    spline_inter("chebspline.txt", chebysh_grid, n);
 
     delete[] uniform_grid[0];
     delete[] chebysh_grid[0];
