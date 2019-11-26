@@ -15,6 +15,7 @@ int     main()
     cout << "Chebysh grid : " << endl;
     print_grid(chebysh_grid, n);
 
+    lagrang_inter(uniform_grid, 0.5, n);
     spline_inter(uniform_grid, n);
     return (0);
 }

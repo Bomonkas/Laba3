@@ -80,12 +80,11 @@ void         print_grid(double **grid, int n)
 double **get_lagr_points(double ** grid, double a, double b, int n, int h)
 {
     double **lagr_points;
-    fstream out;
+    fstream out("points.txt");
 
     lagr_points = new double*[2];
     lagr_points[0] = new double[n * h - 1];
     lagr_points[1] = new double[n * h - 1];
-    out.open("points.txt", ofstream::out);
     for (int i = 0; i < n * h - 1; i++)
     {
         lagr_points[0][i] = a + ((b - a) / (n - 1) * i / h);
@@ -114,16 +113,16 @@ double **get_chebysh_points(double ** grid, double a, double b, int n, int h)
     cheb_points[1] = new double[n * (h - 1)];
     for (int i = 0; i < n * (h - 1); i++)
     {
-        cheb_points[0][n * (h - 1) - i] = (a + b) / 2 + (b - a) / h /  2 * cos((2 * i + 1) * 3.14 / (2 * (n)));
-        out << cheb_points[0][n * (h - 1) - i] << " ";
+        cheb_points[0][n * h - i - 2] = (a + b) / 2 + (b - a) / 2 * cos((2 * i + 1) * 3.14 / (2 * (n)));
+        out << cheb_points[0][n * h - i - 2] << " ";
     }
     out << endl;
-    for (int j = 0; j < n * (h - 1); j++)
+    for (int j = 0; j < n * h - 2; j++)
     {
         cheb_points[1][j] = lagrang_inter(grid, cheb_points[0][j], n);
         put_zero(&(cheb_points[1][j]));
         out << cheb_points[1][j] << " ";
-    }
+    }   
     out << endl;
     out.close();
     return (cheb_points);
@@ -181,9 +180,9 @@ void    spline_inter(double **grid, const int m)
         put_zero(&b[i]);
         put_zero(&c[i]);
         put_zero(&d[i]);
-        cout << setw(10) << a[i] << "\t|" << setw(10) << b[i] << "\t|" << setw(10) //
-            << c[i] << "\t|" << setw(10) << d[i] << "\t|" << setw(10) << grid[0][i-1] //
-            << " < x < " << grid[0][i] << endl;
+        // cout << setw(10) << a[i] << "\t|" << setw(10) << b[i] << "\t|" << setw(10) //
+        //     << c[i] << "\t|" << setw(10) << d[i] << "\t|" << setw(10) << grid[0][i-1] //
+        //     << " < x < " << grid[0][i] << endl;
         fout << a[i] << " " << b[i] << " " << c[i] << " " << d[i] << endl;
     }
     fout.close();
