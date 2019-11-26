@@ -79,7 +79,7 @@ void         print_grid(double **grid, int n)
 double **get_lagr_uniform_points(double ** grid, double a, double b, int n, int h)
 {
     double **lagr_points;
-    fstream out("points.txt");
+    fstream out("uni_points.txt");
 
     lagr_points = new double*[2];
     lagr_points[0] = new double[n * h - 1];
@@ -105,18 +105,17 @@ double **get_lagr_uniform_points(double ** grid, double a, double b, int n, int 
 double **get_lagr_chebysh_points(double ** grid, double a, double b, int n, int h)
 {
     double **cheb_points;
-    fstream out("points.txt");
+    fstream out("cheb_points.txt");
 
     cheb_points = new double*[2];
-    cheb_points[0] = new double[n * h - 1];
-    cheb_points[1] = new double[n * h - 1];
-    for (int i = 0; i < n * h - 1; i++)
-    {
-        cheb_points[0][n * h - i - 1] = (a + b) / 2 + (b - a) / 2 * cos((2 * i + 1) * 3.14 / (2 * (n)));
-        out << cheb_points[0][n * h - i - 1] << " ";
-    }
+    cheb_points[0] = new double[n * h];
+    cheb_points[1] = new double[n * h];
+    for (int i = 0; i < n * h; i++)
+        cheb_points[0][n * h - 1 - i] = (a + b) /  2 + (b - a) / 2 * cos((2 * i + 1) * 3.14 / (2 * (n * h)));
+    for (int i = 0; i < n * h; i++)
+        out << cheb_points[0][i] << " ";
     out << endl;
-    for (int j = 0; j < n * h - 1; j++)
+    for (int j = 0; j < n * h; j++)
     {
         cheb_points[1][j] = lagrang_inter(grid, cheb_points[0][j], n);
         put_zero(&(cheb_points[1][j]));

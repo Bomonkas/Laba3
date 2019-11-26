@@ -7,7 +7,7 @@
 
 using namespace std;
 
-#define FUNC(x) x*x
+#define FUNC(x) pow(4, x)
 #define NUM 10
 #define LEFT -1
 #define RIGHT 1
