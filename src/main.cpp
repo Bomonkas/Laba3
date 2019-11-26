@@ -8,8 +8,8 @@ int     main()
 
     double **uniform_grid = get_uniform_grid(a, b, n);
     double **chebysh_grid = get_chebysh_grid(a, b, n);
-    // get_lagr_uniform_points(uniform_grid, a, b, n, H);
-    // get_lagr_chebysh_points(chebysh_grid, a, b, n, H);
+    get_lagr_uniform_points(uniform_grid, a, b, n, H);
+    get_lagr_chebysh_points(chebysh_grid, a, b, n, H);
     cout << "Uniform grid : " << endl;
     print_grid(uniform_grid, n);
     cout << "Chebysh grid : " << endl;

@@ -109,9 +109,9 @@ double **get_lagr_chebysh_points(double ** grid, double a, double b, int n, int 
     fstream out("points.txt");
 
     cheb_points = new double*[2];
-    cheb_points[0] = new double[n * (h - 1)];
-    cheb_points[1] = new double[n * (h - 1)];
-    for (int i = 0; i < n * (h - 1); i++)
+    cheb_points[0] = new double[n * h - 1];
+    cheb_points[1] = new double[n * h - 1];
+    for (int i = 0; i < n * h - 1; i++)
     {
         cheb_points[0][n * h - i - 2] = (a + b) / 2 + (b - a) / 2 * cos((2 * i + 1) * 3.14 / (2 * (n)));
         out << cheb_points[0][n * h - i - 2] << " ";
