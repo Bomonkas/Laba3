@@ -107,12 +107,11 @@ double **get_lagr_points(double ** grid, double a, double b, int n, int h)
 double **get_chebysh_points(double ** grid, double a, double b, int n, int h)
 {
     double **cheb_points;
-    fstream out;
+    fstream out("points.txt");
 
     cheb_points = new double*[2];
     cheb_points[0] = new double[n * (h - 1)];
     cheb_points[1] = new double[n * (h - 1)];
-    out.open("points.txt", ofstream::app);
     for (int i = 0; i < n * (h - 1); i++)
     {
         cheb_points[0][n * (h - 1) - i] = (a + b) / 2 + (b - a) / h /  2 * cos((2 * i + 1) * 3.14 / (2 * (n)));
@@ -139,20 +138,20 @@ void     put_zero(double *x)
 void    spline_inter(double **grid, const int m)
 {
     ofstream fout("spline.txt");
-
+    fout << m << endl;
     int n = m - 1;
-    double *a = new double[n];
-    double *b = new double[n];
-    double *c = new double[n];
-    double *d = new double[n];
+    double *a = new double[n + 1];
+    double *b = new double[n + 1];
+    double *c = new double[n + 1];
+    double *d = new double[n + 1];
 
-    double *aa = new double[n];
-    double *bb = new double[n];
-    double *cc = new double[n];
-    double *dd = new double[n];
+    double *aa = new double[n + 1];
+    double *bb = new double[n + 1];
+    double *cc = new double[n + 1];
+    double *dd = new double[n + 1];
 
-    double *h = new double[n];
-    double *g = new double[n];
+    double *h = new double[n + 1];
+    double *g = new double[n + 1];
     
     for (int i = 1; i <= n; i++)
     {
@@ -178,20 +177,34 @@ void    spline_inter(double **grid, const int m)
         << "----------------------------------------------------------------------------------------\n";
     for (int i = 1; i <= n; i++)
     {
+        put_zero(&a[i]);
+        put_zero(&b[i]);
+        put_zero(&c[i]);
+        put_zero(&d[i]);
         cout << setw(10) << a[i] << "\t|" << setw(10) << b[i] << "\t|" << setw(10) //
             << c[i] << "\t|" << setw(10) << d[i] << "\t|" << setw(10) << grid[0][i-1] //
             << " < x < " << grid[0][i] << endl;
         fout << a[i] << " " << b[i] << " " << c[i] << " " << d[i] << endl;
     }
     fout.close();
+    delete[] a;
+    delete[] b;
+    delete[] c;
+    delete[] d;
+    delete[] aa;
+    delete[] bb;
+    delete[] cc;
+    delete[] dd;
+    delete[] h;
+    delete[] g;
 }
 
 double  *sweep_method(double *a, double *b, double *c, double *d, const int n)
 {
-    double *alpha = new double[n];
-    double *beta = new double[n];
+    double *alpha = new double[n + 1];
+    double *beta = new double[n + 1];
     double y = 0.;
-    double *x = new double[n];
+    double *x = new double[n + 1];
 
     alpha[2] = c[1] / b[1];
     beta[2] = d[1] / b[1];
@@ -207,5 +220,8 @@ double  *sweep_method(double *a, double *b, double *c, double *d, const int n)
     {
         x[i] = alpha[i] * x[i + 1] + beta[i];
     }
+    delete[] alpha;
+    delete[] beta;
+    
     return (x);
 }

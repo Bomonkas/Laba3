@@ -7,8 +7,8 @@
 
 using namespace std;
 
-#define FUNC(x) x*x
-#define NUM 5
+#define FUNC(x) 1 / (1 + 25 * x * x)
+#define NUM 10
 #define LEFT -1
 #define RIGHT 1
 #define EPS 10e-7
