@@ -151,7 +151,7 @@ void spline_inter(string name_file, double **grid, const int m)
     int n = m - 1;
     double *a = new double[n];
     double *b = new double[n];
-    double *c = new double[n + 1];
+    double *res = new double[n];
     double *d = new double[n];
 
     double *aa = new double[n];
@@ -168,10 +168,13 @@ void spline_inter(string name_file, double **grid, const int m)
         h[i] = grid[0][i + 1] - grid[0][i];
         g[i] = (grid[1][i + 1] - grid[1][i]) / h[i];
     }
+    aa[0] = 0;
     for (int i = 0; i < n; i++)
     {
+        if (i != 0)
         aa[i] = h[i];
         bb[i] = 2 * (h[i] + h[i + 1]);
+        if (i != n)
         cc[i] = h[i + 1];
         dd[i] = 3 * (g[i + 1] - g[i]);
         put_zero(&aa[i]);
@@ -179,18 +182,18 @@ void spline_inter(string name_file, double **grid, const int m)
         put_zero(&cc[i]);
         put_zero(&dd[i]);
     }
+    cc[n - 1] = 0;
 
-    solveMatrix(n, aa, bb, cc, dd, c);
-    // c = sweep_method(aa, bb, cc, dd, n);
-    c[0] = 0;
-    c[n] = 0;
-   
+    solveMatrix(n, aa, bb, cc, dd, res);
+    double *c = new double[n + 1];
+    for (int i = 0; i < n; i++)
+        c[i + 1] = res[i]; 
     for (int i = 0; i < n; i++)
     {
         b[i] = g[i] - (c[i + 1] + 2 * c[i]) * h[i] / 3;
         d[i] = (c[i + 1] - c[i]) / (3 * h[i]);
     }
-   
+
     // cout << "\t" <<"a" << "\t|\t" << "b" << "\t|\t" << "c" << "\t|\t" << "d" //
     //     << "\t|\t" << "(x[i-1], x[i])\n" //
     //     << "----------------------------------------------------------------------------------------\n";
@@ -207,6 +210,7 @@ void spline_inter(string name_file, double **grid, const int m)
     }
     fout.close();
     delete[] a;
+    delete[] res;
     delete[] b;
     delete[] c;
     delete[] d;
@@ -228,7 +232,7 @@ void solveMatrix(int n, double *a, double *c, double *b, double *f, double *x)
 		f[i] = f[i] - m*f[i-1];
 	}
 
-	x[n-1] = 0;
+	x[n-1] = f[n-1] / c[n-1];
     
 	for (int i = n - 2; i >= 0; i--)
     {
@@ -236,29 +240,29 @@ void solveMatrix(int n, double *a, double *c, double *b, double *f, double *x)
     }
 }
 
-// double *sweep_method(double *a, double *b, double *c, double *d, const int n)
-// {
-//     double *alpha = new double[n + 1];
-//     double *beta = new double[n + 1];
-//     double y = 0.;
-//     double *x = new double[n + 2];
+double *sweep_method(double *a, double *b, double *c, double *d, const int n)
+{
+    double *alpha = new double[n + 1];
+    double *beta = new double[n + 1];
+    double y = 0.;
+    double *x = new double[n + 2];
 
-//     alpha[0] = -c[0] / b[0];
-//     beta[0] = d[0] / b[0];
-//     for (int i = 1; i < n; i++)
-//     {
-//         y = b[i] + a[i] * alpha[i - 1];
-//         alpha[i] = -c[i] / y;
-//         beta[i] = (d[i] - a[i] * beta[i - 1]) / y;
-//     }
-//     x[n - 1] = (d[n - 1] + a[n - 1] * beta[n - 2]) / (b[n - 1] + a[n - 1] * alpha[n - 2]);
-//     for (int i = n - 2; i >= 0; i--)
-//     {
-//         x[i] = alpha[i] * x[i + 1] + beta[i];
-//     }
+    alpha[0] = -c[0] / b[0];
+    beta[0] = d[0] / b[0];
+    for (int i = 1; i < n; i++)
+    {
+        y = b[i] + a[i] * alpha[i - 1];
+        alpha[i] = -c[i] / y;
+        beta[i] = (d[i] - a[i] * beta[i - 1]) / y;
+    }
+    x[n - 1] = (d[n - 1] + a[n - 1] * beta[n - 2]) / (b[n - 1] + a[n - 1] * alpha[n - 2]);
+    for (int i = n - 2; i >= 0; i--)
+    {
+        x[i] = alpha[i] * x[i + 1] + beta[i];
+    }
 
-//     delete[] alpha;
-//     delete[] beta;
+    delete[] alpha;
+    delete[] beta;
     
-//     return (x);
-// }
+    return (x);
+}
