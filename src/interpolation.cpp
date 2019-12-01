@@ -1,6 +1,6 @@
 #include "interpolation.h"
 
-double  **get_uniform_grid(double a, double b, int n)
+double **get_uniform_grid(double a, double b, int n)
 {
     double **grid = new double* [2];
     ofstream out("uniform.txt");
@@ -48,10 +48,10 @@ double lagrang_inter(double **grid, double x, int n)
     double res = 0.;
     double prod;
 
-    for (int i = 0; i <= n; i++)
+    for (int i = 0; i < n; i++)
     {
         prod = 1.;
-        for (int j = 0; j <= n; j++)
+        for (int j = 0; j < n; j++)
         {
             if (i != j)
                 prod *= (x - grid[0][j]) / (grid[0][i] - grid[0][j]);
@@ -61,7 +61,7 @@ double lagrang_inter(double **grid, double x, int n)
     return (res);
 }
 
-void         print_grid(double **grid, int n)
+void print_grid(double **grid, int n)
 {
     cout << " x = | ";
     for (int i = 0; i < n; i++)
@@ -126,53 +126,75 @@ double **get_lagr_chebysh_points(double ** grid, double a, double b, int n, int 
     return (cheb_points);
 }
 
-void     put_zero(double *x)
+void put_zero(double *x)
 {
     if (abs(*x) < EPS)
-        *x = 0;
+        *x = 0.;
 }
 
-void    spline_inter(string name_file, double **grid, const int m)
+void print_v(double *vec, const int size)
+{
+	if (!vec) {
+		cout << "Vector is not exist\n";
+		return;
+	}
+	for (int i = 0; i < size; i++) {
+		cout << vec[i] << " ";
+	}
+	cout << endl;
+}
+
+void spline_inter(string name_file, double **grid, const int m)
 {
     ofstream fout(name_file);
     fout << m << endl;
     int n = m - 1;
-    double *a = new double[n + 1];
-    double *b = new double[n + 1];
+    double *a = new double[n];
+    double *b = new double[n];
     double *c = new double[n + 1];
-    double *d = new double[n + 1];
+    double *d = new double[n];
 
     double *aa = new double[n];
     double *bb = new double[n];
     double *cc = new double[n];
     double *dd = new double[n];
 
-    double *h = new double[n + 1];
-    double *g = new double[n + 1];
+    double *h = new double[n];
+    double *g = new double[n];
     
-    for (int i = 1; i <= n; i++)
+    for (int i = 0; i < n; i++)
     {
-        a[i] = grid[1][i - 1];
-        h[i] = grid[0][i] - grid[0][i - 1];
-        g[i] = (grid[1][i] - grid[1][i - 1]) / h[i];
+        a[i] = grid[1][i];
+        h[i] = grid[0][i + 1] - grid[0][i];
+        g[i] = (grid[1][i + 1] - grid[1][i]) / h[i];
     }
-    for (int i = 2; i <= n; i++)
+    for (int i = 0; i < n; i++)
     {
-        aa[i - 1] = h[i - 1];
-        bb[i - 1] = 2 * (h[i - 1] + h[i]);
-        cc[i - 1] = h[i];
-        dd[i - 1] = 3 * (g[i] - g[i - 1]);
+        aa[i] = h[i];
+        bb[i] = 2 * (h[i] + h[i + 1]);
+        cc[i] = h[i + 1];
+        dd[i] = 3 * (g[i + 1] - g[i]);
+        put_zero(&aa[i]);
+        put_zero(&bb[i]);
+        put_zero(&cc[i]);
+        put_zero(&dd[i]);
     }
-    c = sweep_method(aa, bb, cc, dd, n);
-    for (int i = 1; i <= n; i++)
+
+    solveMatrix(n, aa, bb, cc, dd, c);
+    // c = sweep_method(aa, bb, cc, dd, n);
+    c[0] = 0;
+    c[n] = 0;
+   
+    for (int i = 0; i < n; i++)
     {
         b[i] = g[i] - (c[i + 1] + 2 * c[i]) * h[i] / 3;
         d[i] = (c[i + 1] - c[i]) / (3 * h[i]);
     }
+   
     // cout << "\t" <<"a" << "\t|\t" << "b" << "\t|\t" << "c" << "\t|\t" << "d" //
     //     << "\t|\t" << "(x[i-1], x[i])\n" //
     //     << "----------------------------------------------------------------------------------------\n";
-    for (int i = 1; i <= n; i++)
+    for (int i = 0; i < n; i++)
     {
         put_zero(&a[i]);
         put_zero(&b[i]);
@@ -196,29 +218,47 @@ void    spline_inter(string name_file, double **grid, const int m)
     delete[] g;
 }
 
-double  *sweep_method(double *a, double *b, double *c, double *d, const int n)
+void solveMatrix(int n, double *a, double *c, double *b, double *f, double *x)
 {
-    double *alpha = new double[n + 1];
-    double *beta = new double[n + 1];
-    double y = 0.;
-    double *x = new double[n + 1];
+	double m;
+	for (int i = 1; i < n; i++)
+	{
+		m = a[i]/c[i-1];
+		c[i] = c[i] - m*b[i-1];
+		f[i] = f[i] - m*f[i-1];
+	}
 
-    alpha[2] = c[1] / b[1];
-    beta[2] = d[1] / b[1];
-    for (int i = 2; i <= n - 1; i++)
-    {
-        y = b[i] - a[i] * alpha[i];
-        alpha[i + 1] = c[i] / y;
-        beta[i + 1] = (d[i] + a[i] * beta[i]) / y;
-    }
+	x[n-1] = 0;
     
-    x[n] = (d[n-1] + a[n-1] * beta[n-1]) / (b[n-1] - a[n-1] * alpha[n-1]);
-    for (int i = n - 1; i >= 1; i--)
+	for (int i = n - 2; i >= 0; i--)
     {
-        x[i] = alpha[i] * x[i + 1] + beta[i];
+		x[i]=(f[i]-b[i]*x[i+1])/c[i];
     }
-    delete[] alpha;
-    delete[] beta;
-    
-    return (x);
 }
+
+// double *sweep_method(double *a, double *b, double *c, double *d, const int n)
+// {
+//     double *alpha = new double[n + 1];
+//     double *beta = new double[n + 1];
+//     double y = 0.;
+//     double *x = new double[n + 2];
+
+//     alpha[0] = -c[0] / b[0];
+//     beta[0] = d[0] / b[0];
+//     for (int i = 1; i < n; i++)
+//     {
+//         y = b[i] + a[i] * alpha[i - 1];
+//         alpha[i] = -c[i] / y;
+//         beta[i] = (d[i] - a[i] * beta[i - 1]) / y;
+//     }
+//     x[n - 1] = (d[n - 1] + a[n - 1] * beta[n - 2]) / (b[n - 1] + a[n - 1] * alpha[n - 2]);
+//     for (int i = n - 2; i >= 0; i--)
+//     {
+//         x[i] = alpha[i] * x[i + 1] + beta[i];
+//     }
+
+//     delete[] alpha;
+//     delete[] beta;
+    
+//     return (x);
+// }
