@@ -76,46 +76,48 @@ void print_grid(double **grid, int n)
     cout << endl;
 }
 
-double **get_lagr_uniform_points(double ** grid, double a, double b, int n, int h)
+double **get_lagr_uniform_points(double **grid, double a, double b, int n, int h)
 {
-    double **lagr_points;
+    double **uni_points;
     fstream out("uni_points.txt");
 
-    lagr_points = new double*[2];
-    lagr_points[0] = new double[n * h - 1];
-    lagr_points[1] = new double[n * h - 1];
-    for (int i = 0; i < n * h - 1; i++)
+    uni_points = new double*[2];
+    int m = n * h;
+    uni_points[0] = new double[m];
+    uni_points[1] = new double[m];
+    for (int i = 0; i < m; i++)
     {
-        lagr_points[0][i] = a + ((b - a) / (n - 1) * i / h);
-        out << lagr_points[0][i] << " ";
+        uni_points[0][i] = a + (b - a) / (m - 1) * i;
+        out << uni_points[0][i] << " ";
     }
     out << endl;
-    for (int j = 0; j < n * h - 1; j++)
+    for (int j = 0; j < m; j++)
     {
-        lagr_points[1][j] = lagrang_inter(grid, lagr_points[0][j], n);
-        put_zero(&(lagr_points[1][j]));
-        out << lagr_points[1][j] << " ";
+        uni_points[1][j] = lagrang_inter(grid, uni_points[0][j], n);
+        put_zero(&(uni_points[1][j]));
+        out << uni_points[1][j] << " ";
     }
     out << endl;
     out << endl;
     out.close();
-    return (lagr_points);
+    return (uni_points);
 }
 
-double **get_lagr_chebysh_points(double ** grid, double a, double b, int n, int h)
+double **get_lagr_chebysh_points(double **grid, double a, double b, int n, int h)
 {
     double **cheb_points;
     fstream out("cheb_points.txt");
 
+    int m = n * h;
     cheb_points = new double*[2];
-    cheb_points[0] = new double[n * h];
-    cheb_points[1] = new double[n * h];
-    for (int i = 0; i < n * h; i++)
-        cheb_points[0][n * h - 1 - i] = (a + b) /  2 + (b - a) / 2 * cos((2 * i + 1) * 3.14 / (2 * (n * h)));
-    for (int i = 0; i < n * h; i++)
+    cheb_points[0] = new double[m];
+    cheb_points[1] = new double[m];
+    for (int i = 0; i < m; i++)
+        cheb_points[0][m - 1 - i] = (a + b) /  2 + (b - a) / 2 * cos((2 * i + 1) * 3.14 / (2 * m));
+    for (int i = 0; i < m; i++)
         out << cheb_points[0][i] << " ";
     out << endl;
-    for (int j = 0; j < n * h; j++)
+    for (int j = 0; j < m; j++)
     {
         cheb_points[1][j] = lagrang_inter(grid, cheb_points[0][j], n);
         put_zero(&(cheb_points[1][j]));
@@ -144,7 +146,7 @@ void print_v(double *vec, const int size)
 	cout << endl;
 }
 
-void spline_inter(string name_file, double **grid, const int m)
+void spline_inter(string name_file, double **grid, const int m, double a_, double b_)
 {
     ofstream fout(name_file);
     fout << m << endl;
@@ -209,6 +211,74 @@ void spline_inter(string name_file, double **grid, const int m)
         fout << a[i] << " " << b[i] << " " << c[i] << " " << d[i] << endl;
     }
     fout.close();
+
+    if (name_file == "unispline.txt")
+    {
+        double **uni_points;
+        fstream out("spline_uni_points.txt");
+
+        int l = m * H;
+        uni_points = new double*[2];
+        uni_points[0] = new double[l];
+        uni_points[1] = new double[l];
+        for (int i = 0; i < l; i++)
+        {
+            uni_points[0][i] = a_ + (b_ - a_) / (l - 1) * i;
+            out << uni_points[0][i] << " ";
+        }
+        out << endl;
+        int k = 0;
+        print_v(grid[0], m);
+        for (int j = 0; j < l; j++)
+        {
+            k = 0;
+            while ((uni_points[0][j] > grid[0][k + 1]) && (k + 1 < m - 1))
+            k++;
+            uni_points[1][j] = a[k] + b[k] * (uni_points[0][j] - grid[0][k]) + //
+                                c[k] * pow((uni_points[0][j] - grid[0][k]), 2) + //
+                                d[k] * pow((uni_points[0][j] - grid[0][k]), 3);
+            put_zero(&(uni_points[1][j]));
+            out << uni_points[1][j] << " ";
+        }
+        out << endl;
+        out << endl;
+        out.close();
+    } else
+    {
+        double **cheb_points;
+        fstream out1("spline_cheb_points.txt");
+
+        int l = m * H;
+        cheb_points = new double*[2];
+        cheb_points[0] = new double[l];
+        cheb_points[1] = new double[l];
+        print_v(grid[0], m);
+        a_ = grid[0][0];
+        b_ = grid[0][m - 1];
+        cout << a_ << " " << b_ << endl;
+        for (int i = 0; i < l; i++)
+            cheb_points[0][l - 1 - i] = (a_ + b_) /  2 + (b_ - a_) / 2 * cos((2 * i + 1) * 3.14 / (2 * l));
+        for (int i = 0; i < l; i++)
+            out1 << cheb_points[0][i] << " ";
+
+        out1 << endl;
+        int k = 0;
+        for (int j = 0; j < l; j++)
+        {
+            k = 0;
+            while ((cheb_points[0][j] > grid[0][k + 1]) && (k + 1 < m - 1))
+                k++;
+            cheb_points[1][j] = a[k] + b[k] * (cheb_points[0][j] - grid[0][k]) + //
+                                c[k] * pow((cheb_points[0][j] - grid[0][k]), 2) + //
+                                d[k] * pow((cheb_points[0][j] - grid[0][k]), 3);
+            put_zero(&(cheb_points[1][j]));
+            out1 << cheb_points[1][j] << " ";
+        }
+        out1 << endl;
+        out1 << endl;
+        out1.close();
+    }
+
     delete[] a;
     delete[] res;
     delete[] b;

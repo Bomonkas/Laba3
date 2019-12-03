@@ -20,8 +20,8 @@ int main()
     double f = FUNC(x);
     cout << setprecision(10) << "Ln(" << x << ") = " << res << ",   f(" << x <<") = " << f << endl;
     cout << setprecision(10) << "Ln(" << x << ") - f(" << x <<") = " << fabs(res - f) << endl;
-    spline_inter("unispline.txt", uniform_grid, n);
-    spline_inter("chebspline.txt", chebysh_grid, n);
+    spline_inter("unispline.txt", uniform_grid, n, a, b);
+    spline_inter("chebspline.txt", chebysh_grid, n, a, b);
 
     delete[] uniform_grid[0];
     delete[] chebysh_grid[0];
