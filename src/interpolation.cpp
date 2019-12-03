@@ -146,6 +146,21 @@ void print_v(double *vec, const int size)
 	cout << endl;
 }
 
+double get_lagr_error(double **grid, double a, double b, int n)
+{
+    double error = 0.;
+    double x = 0.;
+    double dif = 0.;
+    while (x < b)
+    {
+        x += (b - a) / 1000;
+        dif = fabs(FUNC(x) - lagrang_inter(grid, x, n));
+        if (error < dif)
+        error = dif;
+    }
+    return (error);
+}
+
 void spline_inter(string name_file, double **grid, const int m, double a_, double b_)
 {
     ofstream fout(name_file);
@@ -260,7 +275,6 @@ void spline_inter(string name_file, double **grid, const int m, double a_, doubl
             cheb_points[0][l - 1 - i] = (a_ + b_) /  2 + (b_ - a_) / 2 * cos((2 * i + 1) * 3.14 / (2 * l));
         for (int i = 0; i < l; i++)
             out1 << cheb_points[0][i] << " ";
-
         out1 << endl;
         int k = 0;
         for (int j = 0; j < l; j++)

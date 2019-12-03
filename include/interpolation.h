@@ -22,6 +22,7 @@ double		**get_chebysh_grid(double a, double b, int n);
 double		**get_lagr_uniform_points(double ** grid, double a, double b, int n, int h);
 double		**get_lagr_chebysh_points(double ** grid, double a, double b, int n, int h);
 void		put_zero(double *x);
+double 		get_lagr_error(double **grid, double a, double b, int n);
 void	  	spline_inter(string name_file, double **grid, const int n, double a_, double b_);
 double  	*sweep_method(double *a, double *b, double *c, double *d, const int n);
 void 		print_v(double *vec, const int size);

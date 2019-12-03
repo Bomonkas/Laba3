@@ -15,11 +15,9 @@ int main()
     cout << "Chebysh grid : " << endl;
     print_grid(chebysh_grid, n);
 
-    double x = 0.5;
-    double res = lagrang_inter(uniform_grid, x, n);
-    double f = FUNC(x);
-    cout << setprecision(10) << "Ln(" << x << ") = " << res << ",   f(" << x <<") = " << f << endl;
-    cout << setprecision(10) << "Ln(" << x << ") - f(" << x <<") = " << fabs(res - f) << endl;
+    cout << "Lagr uni error : = " << setprecision(10) << get_lagr_error(uniform_grid, a, b, n) << endl;
+    cout << "Lagr cheb error : = " << setprecision(10) << get_lagr_error(chebysh_grid, a, b, n) << endl;
+
     spline_inter("unispline.txt", uniform_grid, n, a, b);
     spline_inter("chebspline.txt", chebysh_grid, n, a, b);
 
